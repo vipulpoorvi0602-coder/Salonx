@@ -1,0 +1,65 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.admin == true ||
+        request.auth.token.role == 'admin' ||
+        request.auth.uid == 'usr_admin' ||
+        request.auth.token.email == 'admin@salonx.com'
+      );
+    }
+
+    function isSalonOwner(salonId) {
+      return isAuthenticated() && (
+        isAdmin() ||
+        (request.auth.token.role == 'salon_owner' && request.auth.token.salonId == salonId)
+      );
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isUnderSizeLimit(maxMegabytes) {
+      return request.resource.size < maxMegabytes * 1024 * 1024;
+    }
+
+    // 1. Customer Profile Avatars: /users/{userId}/avatar/{fileName}
+    // Customer can upload only their own avatar, image file <= 5MB
+    // Any authenticated user can view public avatar
+    match /users/{userId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) && isImage() && isUnderSizeLimit(5);
+    }
+
+    // 2. Salon Gallery & Verification Photos: /salons/{salonId}/{allPaths=**}
+    // Only authorized salon owner of that salon or Admin can upload, max 10MB
+    // Public read for customer discovery
+    match /salons/{salonId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isSalonOwner(salonId) && isImage() && isUnderSizeLimit(10);
+    }
+
+    // 3. Admin Assets: /admin/{allPaths=**}
+    // Strict Admin access only
+    match /admin/{allPaths=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // Default deny all other paths
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

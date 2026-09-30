@@ -1,0 +1,211 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile representation in SALONX",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "phone": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["customer", "salon_owner", "staff", "admin"] },
+        "salonId": { "type": "string" },
+        "salonName": { "type": "string" },
+        "notificationPreferences": { "type": "object" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "phone", "role"]
+    },
+    "FcmToken": {
+      "title": "FcmToken",
+      "description": "User device registration token for Firebase Cloud Messaging",
+      "type": "object",
+      "properties": {
+        "token": { "type": "string" },
+        "platform": { "type": "string" },
+        "userAgent": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "lastActive": { "type": "string" },
+        "valid": { "type": "boolean" }
+      },
+      "required": ["token", "lastActive"]
+    },
+    "InAppNotification": {
+      "title": "InAppNotification",
+      "description": "User in-app notification record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "targetRole": { "type": "string" },
+        "targetUid": { "type": "string" },
+        "type": { "type": "string" },
+        "title": { "type": "string" },
+        "titleHi": { "type": "string" },
+        "message": { "type": "string" },
+        "messageHi": { "type": "string" },
+        "actionUrl": { "type": "string" },
+        "bookingId": { "type": "string" },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "createdAtTimestamp": { "type": "number" }
+      },
+      "required": ["id", "targetUid", "title", "message", "read"]
+    },
+    "BookingRecord": {
+      "title": "BookingRecord",
+      "description": "Customer appointment booking record in SALONX",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "salonId": { "type": "string" },
+        "customerUid": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "staffId": { "type": "string" },
+        "dateString": { "type": "string" },
+        "timeSlot": { "type": "string" },
+        "status": { "type": "string" },
+        "paymentType": { "type": "string", "enum": ["prepaid", "postpaid"] },
+        "paymentStatus": { "type": "string", "enum": ["paid", "pending", "refunded"] },
+        "totalPrice": { "type": "number" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "salonId", "customerUid", "status"]
+    },
+    "ProcessedEvent": {
+      "title": "ProcessedEvent",
+      "description": "Deduplication record to prevent duplicate notification sends",
+      "type": "object",
+      "properties": {
+        "eventId": { "type": "string" },
+        "eventType": { "type": "string" },
+        "entityId": { "type": "string" },
+        "processedAt": { "type": "string" },
+        "recipientCount": { "type": "number" }
+      },
+      "required": ["eventId", "processedAt"]
+    },
+    "AdminOffer": {
+      "title": "AdminOffer",
+      "description": "Platform promotional campaign created by Admin",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "discountType": { "type": "string", "enum": ["flat", "percentage"] },
+        "discountValue": { "type": "number" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "applicableService": { "type": "string" },
+        "applicableSalonId": { "type": "string" },
+        "targetAudience": { "type": "string" },
+        "targetDays": { "type": "number" },
+        "enabled": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "title", "enabled"]
+    },
+    "AdminNotificationConfig": {
+      "title": "AdminNotificationConfig",
+      "description": "Global notification controls and reminder timing settings",
+      "type": "object",
+      "properties": {
+        "autoNotificationsEnabled": { "type": "boolean" },
+        "bookingReminderEnabled": { "type": "boolean" },
+        "bookingReminderTiming": { "type": "string", "enum": ["1_hour", "1_day", "both"] },
+        "customerReminderEnabled": { "type": "boolean" },
+        "customerReminderDays": { "type": "number" },
+        "reengagementNotificationsEnabled": { "type": "boolean" },
+        "minCooldownHours": { "type": "number" }
+      },
+      "required": ["autoNotificationsEnabled", "bookingReminderTiming"]
+    },
+    "SalonProfile": {
+      "title": "SalonProfile",
+      "description": "Salon business record and profile in SALONX",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerUid": { "type": "string" },
+        "name": { "type": "string" },
+        "address": { "type": "string" },
+        "phone": { "type": "string" },
+        "isVerified": { "type": "boolean" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "ownerUid", "name"]
+    },
+    "PaymentRecord": {
+      "title": "PaymentRecord",
+      "description": "Financial ledger record for booking transactions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "bookingId": { "type": "string" },
+        "salonId": { "type": "string" },
+        "customerUid": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "bookingId", "salonId", "customerUid", "amount", "status"]
+    },
+    "SalonClosure": {
+      "title": "SalonClosure",
+      "description": "Salon closure dates and emergency holiday announcements",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "salonId": { "type": "string" },
+        "date": { "type": "string" },
+        "reason": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "salonId", "date"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profiles"
+    },
+    "/users/{userId}/fcm_tokens/{tokenId}": {
+      "schema": "FcmToken",
+      "description": "User device registration tokens for FCM"
+    },
+    "/users/{userId}/notifications/{notifId}": {
+      "schema": "InAppNotification",
+      "description": "In-app notifications for the user"
+    },
+    "/salons/{salonId}": {
+      "schema": "SalonProfile",
+      "description": "Salon businesses"
+    },
+    "/bookings/{bookingId}": {
+      "schema": "BookingRecord",
+      "description": "Appointments and bookings"
+    },
+    "/payments/{paymentId}": {
+      "schema": "PaymentRecord",
+      "description": "Ledger payment records"
+    },
+    "/salon_closures/{closureId}": {
+      "schema": "SalonClosure",
+      "description": "Salon closures and holiday schedules"
+    },
+    "/processed_events/{eventId}": {
+      "schema": "ProcessedEvent",
+      "description": "Deduplication table for business events"
+    },
+    "/admin_offers/{offerId}": {
+      "schema": "AdminOffer",
+      "description": "Promotional campaigns managed by admin"
+    },
+    "/admin_config/{configId}": {
+      "schema": "AdminNotificationConfig",
+      "description": "Platform-wide notification settings"
+    }
+  }
+}
